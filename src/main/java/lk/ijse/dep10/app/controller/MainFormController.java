@@ -19,6 +19,7 @@ import lk.ijse.dep10.app.model.Student;
 
 import javax.imageio.ImageIO;
 import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -86,9 +87,8 @@ public class MainFormController {
                 tblDetails.getItems().clear();
                 loadAllStudents();
                 btnNewStudent.fire();
-            }
-            else {
-
+            } else {
+                tblDetails.getSelectionModel().clearSelection();
                 Connection connection = DBConnection.getInstance().getConnection();
                 try {
                     String sql = "SELECT * FROM  Student WHERE id LIKE ? or name LIKE ? ";
@@ -100,11 +100,7 @@ public class MainFormController {
                     while (resultSet.next()) {
                         var id = resultSet.getString("id");
                         var name = resultSet.getString("name");
-                        var bufferedImage = SwingFXUtils.fromFXImage(new Image("/images/avatar.png", 50, 50, true, true), null);
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        ImageIO.write(bufferedImage, "png", bos);
-                        byte[] bytes = bos.toByteArray();
-                        Blob picture = new SerialBlob(bytes);
+                        Blob picture = getBlob(new Image("/images/avatar.png", 50, 50, true, true));
                         ImageView imageView = new ImageView(new Image(picture.getBinaryStream()));
                         preparedStatement.setString(1, id);
                         var rst = preparedStatement.executeQuery();
@@ -120,11 +116,27 @@ public class MainFormController {
 
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
             }
         });
+    }
+
+    private Blob getBlob(Image image) {
+        var bufferedImage = SwingFXUtils.fromFXImage(image, null);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "png", bos);
+            byte[] bytes = bos.toByteArray();
+            Blob blob = new SerialBlob(bytes);
+            return blob;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (SerialException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void loadAllStudents() {
@@ -136,13 +148,8 @@ public class MainFormController {
             while (rst.next()) {
                 String id = rst.getString("id");
                 String name = rst.getString("name");
-                var bufferedImage = SwingFXUtils.fromFXImage(new Image("/images/avatar.png", 50, 50, true, true), null);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ImageIO.write(bufferedImage, "png", bos);
-                byte[] bytes = bos.toByteArray();
-                Blob picture = new SerialBlob(bytes);
+                Blob picture = getBlob(new Image("/images/avatar.png", 50, 50, true, true));
                 ImageView imageView = new ImageView(new Image(picture.getBinaryStream()));
-
                 preparedStatement.setString(1, id);
                 var resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
@@ -159,8 +166,6 @@ public class MainFormController {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Failed to load students,Try again!");
             System.exit(1);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

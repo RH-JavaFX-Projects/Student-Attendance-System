@@ -106,7 +106,7 @@
                   </TextField>
                   <TableView fx:id="tblDetails" onKeyReleased="#btlDetailsOnKeyReleased" prefHeight="635.0" prefWidth="610.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="PICTURE" />
+                      <TableColumn fx:id="tblDetailsPicture" prefWidth="75.0" text="PICTURE" />
                       <TableColumn prefWidth="75.0" text="ID" />
                         <TableColumn prefWidth="75.0" text="NAME" />
                     </columns>

@@ -1,3 +1,66 @@
 .invalid {
     -fx-focus-color: red !important;
 }
+#btnNewStudent{
+    -fx-background-color: seagreen;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-border-color: black ;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+}
+#btnBrowse{
+    -fx-background-color:steelblue;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-border-color: black ;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+}
+#btnClear{
+    -fx-background-color:chocolate;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-border-color: black ;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+}
+#btnSave{
+    -fx-background-color:steelblue;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-border-color: black ;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+}
+#btnDelete{
+    -fx-background-color:chocolate;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-border-color: black ;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+}
+#btnNewStudent:hover{
+    -fx-opacity: 0.6;
+}
+#btnBrowse:hover{
+    -fx-opacity: 0.6;
+}
+#btnSave:hover{
+    -fx-opacity: 0.6;
+}
+#btnClear:hover{
+    -fx-opacity: 0.6;
+}
+#btnDelete:hover{
+    -fx-opacity: 0.6;
+}
+#tblDetails{
+    -fx-font-size: 17px;
+    -fx-font: ubuntu;
+}
+#tblDetailsPicture{
+    -fx-alignment: center;
+}
+

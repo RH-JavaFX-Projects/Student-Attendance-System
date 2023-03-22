@@ -12,15 +12,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AppInitializer extends Application {
 
     public static void main(String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                if (DBConnection.getInstance().getConnection()!=null &&
+                if (DBConnection.getInstance().getConnection() != null &&
                         !DBConnection.getInstance().getConnection().isClosed()) {
                     DBConnection.getInstance().getConnection().close();
                 }
@@ -51,21 +54,32 @@ public class AppInitializer extends Application {
     }
 
     private void generateTablesIfNotExist() {
+        Connection connection = DBConnection.getInstance().getConnection();
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SHOW TABLES");
 
-            InputStream resourceAsStream = getClass().getResourceAsStream("/schema.sql");
-            if (resourceAsStream!=null) {
-                BufferedReader br = new BufferedReader( new InputStreamReader(resourceAsStream));
+            HashSet<String> tableNameSet = new HashSet<>();
+            while (rst.next()) {
+                tableNameSet.add(rst.getString(1));
+            }
 
-                String line ;
-                StringBuilder dbScript = new StringBuilder();
-                while ((line = br.readLine()) != null) {
-                    dbScript.append(line).append("\n");
+            boolean tableExists = tableNameSet.
+                    containsAll(Set.of("Attendance", "Picture", "Student", "User"));
+
+            if (!tableExists) {
+                InputStream resourceAsStream = getClass().getResourceAsStream("/schema.sql");
+                if (resourceAsStream != null) {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(resourceAsStream));
+
+                    String line;
+                    StringBuilder dbScript = new StringBuilder();
+                    while ((line = br.readLine()) != null) {
+                        dbScript.append(line).append("\n");
+                    }
+                    br.close();
+                    stm.execute(dbScript.toString());
                 }
-                br.close();
-                stm.execute(dbScript.toString());
             }
 
 
