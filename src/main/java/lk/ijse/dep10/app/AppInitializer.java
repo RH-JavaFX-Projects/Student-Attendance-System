@@ -39,6 +39,7 @@ public class AppInitializer extends Application {
         try {
             primaryStage.setScene(new Scene(new FXMLLoader(getClass().getResource("/view/MainForm.fxml")).load()));
             primaryStage.show();
+//            primaryStage.setMaximized(true);
             primaryStage.centerOnScreen();
             primaryStage.setTitle("Student Attendance System");
         } catch (IOException e) {
