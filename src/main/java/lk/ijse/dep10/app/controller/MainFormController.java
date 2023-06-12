@@ -2,7 +2,6 @@ package lk.ijse.dep10.app.controller;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -19,16 +18,12 @@ import lk.ijse.dep10.app.model.Student;
 
 import javax.imageio.ImageIO;
 import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 
 public class MainFormController {
-
-    @FXML
-    private Button btnBrowse;
 
     @FXML
     private Button btnClear;
@@ -100,7 +95,7 @@ public class MainFormController {
                     while (resultSet.next()) {
                         var id = resultSet.getString("id");
                         var name = resultSet.getString("name");
-                        Blob picture = getBlob(new Image("/images/avatar.png", 50, 50, true, true));
+                        Blob picture = getBlob();
                         ImageView imageView = new ImageView(new Image(picture.getBinaryStream()));
                         preparedStatement.setString(1, id);
                         var rst = preparedStatement.executeQuery();
@@ -108,12 +103,9 @@ public class MainFormController {
                             picture = rst.getBlob("picture");
                             imageView.setImage(new Image(picture.getBinaryStream(), 50, 50, true, true));
                         }
-
-
                         tblDetails.getItems().clear();
                         tblDetails.getItems().add((new Student(id, name, picture, imageView)));
                     }
-
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -121,19 +113,14 @@ public class MainFormController {
         });
     }
 
-    private Blob getBlob(Image image) {
-        var bufferedImage = SwingFXUtils.fromFXImage(image, null);
+    private Blob getBlob() {
+        var bufferedImage = SwingFXUtils.fromFXImage(new Image("/images/avatar.png", 50, 50, true, true), null);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             ImageIO.write(bufferedImage, "png", bos);
             byte[] bytes = bos.toByteArray();
-            Blob blob = new SerialBlob(bytes);
-            return blob;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SerialException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+            return new SerialBlob(bytes);
+        } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -148,7 +135,7 @@ public class MainFormController {
             while (rst.next()) {
                 String id = rst.getString("id");
                 String name = rst.getString("name");
-                Blob picture = getBlob(new Image("/images/avatar.png", 50, 50, true, true));
+                Blob picture = getBlob();
                 ImageView imageView = new ImageView(new Image(picture.getBinaryStream()));
                 preparedStatement.setString(1, id);
                 var resultSet = preparedStatement.executeQuery();
@@ -156,7 +143,6 @@ public class MainFormController {
                     picture = resultSet.getBlob("picture");
                     imageView.setImage(new Image(picture.getBinaryStream(), 50, 50, true, true));
                 }
-
                 Student student = new Student(id, name, picture, imageView);
                 tblDetails.getItems().add(student);
 
@@ -176,7 +162,7 @@ public class MainFormController {
     }
 
     @FXML
-    void btnBrowseOnAction(ActionEvent event) {
+    void btnBrowseOnAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select the Student Picture");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp"));
@@ -191,13 +177,13 @@ public class MainFormController {
     }
 
     @FXML
-    void btnClearOnAction(ActionEvent event) {
+    void btnClearOnAction() {
         imgPicture.setImage(new Image("/images/avatar.png"));
         btnClear.setDisable(true);
     }
 
     @FXML
-    void btnDeleteOnAction(ActionEvent event) {
+    void btnDeleteOnAction() {
         var connection = DBConnection.getInstance().getConnection();
         try {
             if (!btnClear.isDisable()) {
@@ -236,7 +222,7 @@ public class MainFormController {
     }
 
     @FXML
-    void btnNewStudentOnAction(ActionEvent event) {
+    void btnNewStudentOnAction() {
         txtName.getStyleClass().remove("invalid");
         txtId.clear();
         txtName.requestFocus();
@@ -259,7 +245,7 @@ public class MainFormController {
     }
 
     @FXML
-    void btnSaveOnAction(ActionEvent event) {
+    void btnSaveOnAction() {
         boolean isValid = true;
         if (txtName.getText().isEmpty() || !txtName.getText().matches("[A-Za-z ]{2,}")) {
             isValid = false;
